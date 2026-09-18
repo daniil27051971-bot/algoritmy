@@ -1,0 +1,102 @@
+1
+SELECT 
+    s.last_name || ' ' || s.first_name || ' ' || COALESCE(s.middle_name, '') AS full_name,
+    g.name AS group_name,
+    g.year AS admission_year
+FROM students s
+JOIN groups g ON s.group_id = g.group_id
+ORDER BY g.name, s.last_name;
+
+2 
+SELECT 
+    s.last_name || ' ' || s.first_name || ' ' || COALESCE(s.middle_name, '') AS full_name,
+    g.name AS group_name,
+    g.year AS admission_year
+FROM students s
+JOIN groups g ON s.group_id = g.group_id
+ORDER BY g.name, s.last_name;
+
+3
+SELECT
+    s.last_name || ' ' || s.first_name || ' ' || COALESCE(s.middle_name, '') AS students_name,
+    c.name as courses_name,
+    gr.grade,
+    gr.exam_date
+ from grades gr 
+ join students s on gr.student_id = s.student_id 
+ join courses c on gr.course_id = c.course_id
+ order by s.last_name, c.name, gr.exam_date;
+
+4
+SELECT 
+    t.last_name || ' ' || t.first_name || ' ' || COALESCE(t.middle_name, '') AS teacher_name,
+    t.position,
+    d.name AS department_name,
+    GROUP_CONCAT(DISTINCT c.name, '; ') AS courses
+FROM teachers t
+JOIN departments d ON t.department_id = d.department_id
+LEFT JOIN grades gr ON t.teacher_id = gr.teacher_id
+LEFT JOIN courses c ON gr.course_id = c.course_id
+GROUP BY t.teacher_id, t.last_name, t.first_name, t.middle_name, t.position, d.name
+ORDER BY t.last_name;
+
+5
+SELECT
+    s.last_name || ' ' || s.first_name || ' ' || COALESCE(s.middle_name, '') AS students_name, 
+    g.name as group_name,
+    f.name as faculty_name,
+    ROUND(AVG(gr.grade), 2) as avg_grade
+from students s 
+join groups g On s.group_id = g.group_id 
+join departments d on g.department_id = d.department_id
+join faculties f on d.faculty_id = f.faculty_id  
+join grades gr on s.student_id = gr.student_id 
+group by s.student_id, s.last_name, s.first_name, s.middle_name, g.name, f.name
+having AVG(gr.grade) > 4.5
+ORDER BY avg_grade DESC;
+
+6
+SELECT
+    c.name as course_name,
+    d.name as department_name,
+    count(gr.student_id) as students_count,
+    ROUND(AVG(gr.grade), 2) as avg_grade,
+    MAX(gr.grade) as max_grade
+FROM courses c
+join departments d on c.department_id = d.department_id
+left join grades gr on c.course_id = gr.course_id
+group by c.course_id, c.name, d.name
+order by c.name;
+
+7
+SELECT 
+    t.last_name || ' ' || t.first_name || ' ' || COALESCE(t.middle_name, '') AS teacher_name,
+    t.position,
+    count(gr.grade_id) as exams_count,
+    ROUND(AVG(gr.grade), 2) as ang_grade
+from teachers t 
+left join grades gr on t.teacher_id = gr.teacher_id
+GROUp by t.teacher_id, t.last_name, t.first_name, t.middle_name, t.position 
+order by exams_count desc;
+    
+8
+SELECT
+    g.name as group_name,
+    d.name as department_name,
+    f.name as faculty_name
+from groups g 
+join departments d on g.department_id = d.department_id
+join faculties f on d.faculty_id = f.faculty_id
+left join students s on g.group_id = s.group_id
+WHERE s.student_id is NULL
+order by g.name;
+
+9
+SELECT 
+    s.last_name || ' ' || s.first_name || ' ' || COALESCE(s.middle_name, '') AS student_name,
+    g.name AS group_name
+FROM students s
+JOIN groups g ON s.group_id = g.group_id
+LEFT JOIN grades gr ON s.student_id = gr.student_id
+WHERE gr.grade_id IS NULL
+ORDER BY g.name, s.last_name;
